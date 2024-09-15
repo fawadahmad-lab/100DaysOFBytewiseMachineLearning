@@ -10,12 +10,17 @@ IMAGE_SIZE = 255
 
 # Function to preprocess and predict
 def predict(img):
+    # Resize the image to the required size (255, 255)
+    img = img.resize((IMAGE_SIZE, IMAGE_SIZE))
+    
+    # Convert the image to an array
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
     
-    # Normalize the image if needed (example: dividing by 255)
-    img_array /= 255.0  # Assuming model was trained with normalized images
+    # Normalize the image (if the model expects normalized images)
+    img_array /= 255.0
 
+    # Make predictions
     predictions = model.predict(img_array)
     predicted_class = class_names[np.argmax(predictions[0])]
     confidence = round(100 * np.max(predictions[0]), 2)
@@ -24,6 +29,7 @@ def predict(img):
 # Streamlit UI
 st.title('Potato Disease Classification')
 
+# Upload image
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
@@ -34,5 +40,6 @@ if uploaded_file is not None:
     # Predict the image class and confidence
     predicted_class, confidence = predict(img)
     
+    # Display the predictions
     st.write(f"Prediction: {predicted_class}")
     st.write(f"Confidence: {confidence}%")
